@@ -1,53 +1,46 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ArrowDown, ArrowUpRight, Camera, Check, Menu, X } from "lucide-react"
+import { ArrowDown, ArrowUpRight, Check, Menu, MoveDown, X } from "lucide-react"
 
-const scenes = [
-  { number: "01", eyebrow: "El origen", title: "Materia\ncon memoria.", description: "Madera seleccionada, manos expertas y una forma de hacer que respeta el tiempo.", image: "/ofiseman-space.png", align: "left" },
-  { number: "02", eyebrow: "El espacio", title: "Diseñamos\npara vivir.", description: "Interiores que no piden permiso. Se sienten, se habitan y envejecen contigo.", image: "/ofiseman-detail.png", align: "right" },
-  { number: "03", eyebrow: "El detalle", title: "Lo esencial\nse nota.", description: "Cada unión, cada veta, cada sombra. La belleza está en lo que permanece.", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=2200&q=90", align: "left" },
+const chapters = [
+  { id: "01", label: "La veta", title: "Todo empieza\nen el árbol.", copy: "Seleccionamos cada tablón por su dibujo, su peso y la historia que todavía guarda.", image: "/ofiseman-space.png", material: "Nogal · 04.2 mm" },
+  { id: "02", label: "El corte", title: "Medimos\nlo invisible.", copy: "La precisión no se ve. Se nota cuando una pieza encaja como si siempre hubiera estado ahí.", image: "/ofiseman-detail.png", material: "Roble · Unión 01" },
+  { id: "03", label: "El lugar", title: "La casa\nse despierta.", copy: "No fabricamos objetos aislados. Construimos el escenario de tus días.", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=2200&q=90", material: "Interior · Madrid 2026" },
 ]
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [active, setActive] = useState(0)
 
   useEffect(() => {
-    let frame = 0
-    const updateScenes = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => {
-        document.querySelectorAll<HTMLElement>(".image-scene").forEach((scene) => {
-          const rect = scene.getBoundingClientRect()
-          const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)))
-          scene.style.setProperty("--scene-progress", progress.toFixed(3))
-        })
-      })
+    const onScroll = () => {
+      const sections = [...document.querySelectorAll<HTMLElement>("[data-chapter]")]
+      let closest = 0
+      sections.forEach((section, index) => { if (Math.abs(section.getBoundingClientRect().top - window.innerHeight * .32) < Math.abs(sections[closest].getBoundingClientRect().top - window.innerHeight * .32)) closest = index })
+      setActive(closest)
+      document.documentElement.style.setProperty("--scroll-angle", `${window.scrollY * .035}deg`)
     }
-    updateScenes()
-    window.addEventListener("scroll", updateScenes, { passive: true })
-    window.addEventListener("resize", updateScenes)
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener("scroll", updateScenes)
-      window.removeEventListener("resize", updateScenes)
-    }
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  return (
-    <main className="site-shell">
-      <header className="floating-nav"><a className="brand" href="#inicio" aria-label="Ofiseman, inicio"><span>OFI</span>SEMAN</a><nav className={menuOpen ? "nav-links open" : "nav-links"}><a href="#historia" onClick={() => setMenuOpen(false)}>Historia</a><a href="#espacios" onClick={() => setMenuOpen(false)}>Espacios</a><a href="#contacto" onClick={() => setMenuOpen(false)}>Contacto</a></nav><div className="nav-right"><span>Madrid · 1987</span><button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menú">{menuOpen ? <X /> : <Menu />}</button></div></header>
+  return <main className="workshop">
+    <header className={menuOpen ? "workshop-nav open" : "workshop-nav"}><a className="brand" href="#inicio"><span>OFI</span>SEMAN</a><nav><a href="#materia" onClick={() => setMenuOpen(false)}>Materia</a><a href="#proceso" onClick={() => setMenuOpen(false)}>Proceso</a><a href="#contacto" onClick={() => setMenuOpen(false)}>Encargos</a></nav><div className="nav-code">OF / 1987 / MAD <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menú">{menuOpen ? <X /> : <Menu />}</button></div></header>
 
-      <section className="intro-scene" id="inicio"><img src="/ofiseman-hero.png" alt="Interior de madera cálido y contemporáneo" /><div className="scene-wash" /><div className="intro-content"><p className="kicker">Ofiseman / Carpintería e interiorismo</p><h1>La madera<br /><em>cuenta historias.</em></h1><p className="intro-copy">Diseñamos espacios con alma y construimos piezas para toda una vida.</p></div><a className="scroll-cue" href="#historia"><span>Scroll para descubrir</span><ArrowDown /></a><span className="scene-index">01 — 03</span></section>
+    <section className="workshop-hero" id="inicio"><div className="blueprint-grid" /><div className="hero-copy"><p className="work-label">Ofiseman / Taller de carpintería</p><h1>La casa<br /><em>se construye.</em></h1><p>Diseñamos lugares con la paciencia de quien trabaja la madera: capa a capa, detalle a detalle.</p><a className="enter-link" href="#materia">Entrar en el taller <ArrowDown /></a></div><div className="hero-plank"><span>OFI—01</span><span>Escala 1:1</span></div><div className="hero-coordinates">40°24&apos;N<br />3°42&apos;W</div></section>
 
-      <div className="scene-stack" id="historia">{scenes.map((scene) => <section className={`image-scene ${scene.align}`} key={scene.number} style={{ backgroundImage: `url(${scene.image})` }}><div className="scene-shade" /><div className="scene-content"><span className="scene-number">{scene.number} / OFISEMAN</span><p className="kicker">{scene.eyebrow}</p><h2>{scene.title.split("\n").map((line, index) => <span key={line}>{line}{index === 0 && <br />}</span>)}</h2><p className="scene-description">{scene.description}</p><a className="round-arrow" href="#contacto" aria-label={`Descubre ${scene.eyebrow}`}><ArrowUpRight /></a></div><span className="image-caption">Ofiseman — Estudio de materia</span></section>)}</div>
+    <section className="manifesto-strip" id="materia"><span>01 — LA MATERIA</span><p>Antes de ser mueble, la madera es paisaje.</p><MoveDown /></section>
 
-      <section className="closing-scene" id="espacios"><div className="closing-backdrop" /><div className="closing-content"><p className="kicker">Una forma de hacer</p><h2>Hecho para<br /><em>quedarse.</em></h2><p>Desde un mueble hasta un espacio completo. Hablamos de tu idea, dibujamos el camino y la hacemos realidad.</p><button className="outline-button" onClick={() => setShowForm(true)}>Cuéntanos tu proyecto <ArrowUpRight /></button></div></section>
+    <div className="chapter-stack">{chapters.map((chapter, index) => <section className="chapter" data-chapter key={chapter.id} style={{ zIndex: index + 1 }}><div className="chapter-image" style={{ backgroundImage: `url(${chapter.image})` }} /><div className="grain-overlay" /><div className="chapter-copy"><span className="chapter-code">{chapter.id} / 03</span><p className="work-label">{chapter.label}</p><h2>{chapter.title.split("\n").map((line, i) => <span key={line}>{line}{i === 0 && <br />}</span>)}</h2><p>{chapter.copy}</p><a className="chapter-link" href="#contacto">Ver el detalle <ArrowUpRight /></a></div><div className="material-tag"><span>{chapter.material}</span><i /></div></section>)}</div>
 
-      <footer id="contacto"><a className="brand" href="#inicio"><span>OFI</span>SEMAN</a><div><span>hola@ofiseman.es</span><span>+34 91 555 01 87</span></div><a href="#espacios">Instagram <Camera /></a></footer>
+    <section className="process-blueprint" id="proceso"><div className="blueprint-grid" /><div className="process-heading"><p className="work-label">El proceso</p><h2>Del plano<br /><em>a la vida.</em></h2></div><div className="process-steps">{["Escuchar", "Dibujar", "Cortar", "Instalar"].map((step, index) => <div className="step" key={step}><span>0{index + 1}</span><strong>{step}</strong><p>{["Tu forma de habitar es nuestro primer material.", "Convertimos intuiciones en proporciones.", "El taller traduce el dibujo en materia.", "La pieza encuentra su lugar definitivo."][index]}</p></div>)}</div></section>
 
-      {showForm && <div className="modal-backdrop" onClick={() => setShowForm(false)}><div className="modal" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Cerrar"><X /></button><p className="kicker">Cuéntanos</p><h2>Hagamos algo<br /><em>extraordinario.</em></h2><form onSubmit={(event) => { event.preventDefault(); setShowForm(false) }}><input required placeholder="Tu nombre" aria-label="Tu nombre" /><input required type="email" placeholder="Tu email" aria-label="Tu email" /><textarea required placeholder="Háblanos de tu proyecto" aria-label="Tu proyecto" rows={4} /><button className="outline-button" type="submit">Enviar mensaje <Check /></button></form></div></div>}
-    </main>
-  )
+    <section className="final-room" id="contacto"><div className="final-image" /><div className="final-copy"><p className="work-label">Último paso</p><h2>¿Qué vamos<br /><em>a construir?</em></h2><button className="work-button" onClick={() => setShowForm(true)}>Abrir encargo <ArrowUpRight /></button></div></section>
+    <footer><a className="brand" href="#inicio"><span>OFI</span>SEMAN</a><span>Hecho con oficio desde 1987</span><span>hola@ofiseman.es</span></footer>
+
+    {showForm && <div className="modal-backdrop" onClick={() => setShowForm(false)}><div className="modal" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowForm(false)} aria-label="Cerrar"><X /></button><p className="work-label">Nuevo encargo</p><h2>Hagamos<br /><em>algo único.</em></h2><form onSubmit={(event) => { event.preventDefault(); setShowForm(false) }}><input required placeholder="Tu nombre" aria-label="Tu nombre" /><input required type="email" placeholder="Tu email" aria-label="Tu email" /><textarea required placeholder="Cuéntanos qué quieres construir" aria-label="Tu proyecto" rows={4} /><button className="work-button" type="submit">Enviar <Check /></button></form></div></div>}
+    <div className="scroll-meter"><span style={{ height: `${((active + 1) / chapters.length) * 100}%` }} /><b>0{active + 1}</b></div>
+  </main>
 }
