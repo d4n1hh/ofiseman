@@ -4,9 +4,9 @@ import { useEffect, useState } from "react"
 import { ArrowDown, ArrowUpRight, Camera, Check, Menu, X } from "lucide-react"
 
 const scenes = [
-  { number: "01", eyebrow: "El origen", title: "Materia\ncon memoria.", description: "Madera seleccionada, manos expertas y una forma de hacer que respeta el tiempo.", image: "/ofiseman-hero.png", align: "left" },
-  { number: "02", eyebrow: "El espacio", title: "Diseñamos\npara vivir.", description: "Interiores que no piden permiso. Se sienten, se habitan y envejecen contigo.", image: "/ofiseman-space.png", align: "right" },
-  { number: "03", eyebrow: "El detalle", title: "Lo esencial\nse nota.", description: "Cada unión, cada veta, cada sombra. La belleza está en lo que permanece.", image: "/ofiseman-detail.png", align: "left" },
+  { number: "01", eyebrow: "El origen", title: "Materia\ncon memoria.", description: "Madera seleccionada, manos expertas y una forma de hacer que respeta el tiempo.", image: "/ofiseman-space.png", align: "left" },
+  { number: "02", eyebrow: "El espacio", title: "Diseñamos\npara vivir.", description: "Interiores que no piden permiso. Se sienten, se habitan y envejecen contigo.", image: "/ofiseman-detail.png", align: "right" },
+  { number: "03", eyebrow: "El detalle", title: "Lo esencial\nse nota.", description: "Cada unión, cada veta, cada sombra. La belleza está en lo que permanece.", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=2200&q=90", align: "left" },
 ]
 
 export default function Home() {
