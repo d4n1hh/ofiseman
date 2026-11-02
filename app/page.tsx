@@ -1,17 +1,39 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowDown, ArrowUpRight, Camera, Check, Menu, X } from "lucide-react"
 
 const scenes = [
   { number: "01", eyebrow: "El origen", title: "Materia\ncon memoria.", description: "Madera seleccionada, manos expertas y una forma de hacer que respeta el tiempo.", image: "/ofiseman-hero.png", align: "left" },
-  { number: "02", eyebrow: "El espacio", title: "Diseñamos\npara vivir.", description: "Interiores que no piden permiso. Se sienten, se habitan y envejecen contigo.", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=90", align: "right" },
-  { number: "03", eyebrow: "El detalle", title: "Lo esencial\nse nota.", description: "Cada unión, cada veta, cada sombra. La belleza está en lo que permanece.", image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&w=2200&q=90", align: "left" },
+  { number: "02", eyebrow: "El espacio", title: "Diseñamos\npara vivir.", description: "Interiores que no piden permiso. Se sienten, se habitan y envejecen contigo.", image: "/ofiseman-space.png", align: "right" },
+  { number: "03", eyebrow: "El detalle", title: "Lo esencial\nse nota.", description: "Cada unión, cada veta, cada sombra. La belleza está en lo que permanece.", image: "/ofiseman-detail.png", align: "left" },
 ]
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showForm, setShowForm] = useState(false)
+
+  useEffect(() => {
+    let frame = 0
+    const updateScenes = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(() => {
+        document.querySelectorAll<HTMLElement>(".image-scene").forEach((scene) => {
+          const rect = scene.getBoundingClientRect()
+          const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)))
+          scene.style.setProperty("--scene-progress", progress.toFixed(3))
+        })
+      })
+    }
+    updateScenes()
+    window.addEventListener("scroll", updateScenes, { passive: true })
+    window.addEventListener("resize", updateScenes)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", updateScenes)
+      window.removeEventListener("resize", updateScenes)
+    }
+  }, [])
 
   return (
     <main className="site-shell">
